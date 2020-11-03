@@ -2,7 +2,7 @@
 # license: GPLv3
 
 gravitational_constant = 6.67408E-11
-"""Гравитационная постоянная Ньютона G"""
+"""Гравитационная постоянная Ньютона G 123"""
 
 
 def calculate_force(body, space_objects):
