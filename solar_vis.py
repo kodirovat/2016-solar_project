@@ -5,6 +5,7 @@
 Нигде, кроме этого модуля, не используются экранные координаты объектов.
 Функции, создающие гaрафические объекты и перемещающие их на экране, принимают физические координаты
 """
+import pygame
 
 header_font = "Arial-16"
 """Шрифт в заголовке"""
@@ -24,7 +25,7 @@ scale_factor = None
 def calculate_scale_factor(max_distance):
     """Вычисляет значение глобальной переменной **scale_factor** по данной характерной длине"""
     global scale_factor
-    scale_factor = 0.4 * min(window_height, window_width) / max_distance
+    scale_factor = 0.4 * min(window_height-100, window_width) / max_distance
     print('Scale factor:', scale_factor)
 
 
@@ -54,10 +55,10 @@ def scale_y(y):
     **y** — y-координата модели.
     """
 
-    return int(y * scale_factor) + window_height / 2 * 1.2
+    return int(y * scale_factor + (window_height-100) / 2 * 1.2)
 
 
-def create_star_image(space, star):
+def create_star_image(screen, star):
     """Создаёт отображаемый объект звезды.
 
     Параметры:
@@ -68,11 +69,11 @@ def create_star_image(space, star):
 
     x = scale_x(star.x)
     y = scale_y(star.y)
-    r = star.R
-    star.image = space.create_oval([x - r, y - r], [x + r, y + r], fill=star.color)
+    r = round(star.R)
+    star.image = pygame.draw.circle(screen, star.color, ([x, y]), r)
 
 
-def create_planet_image(space, planet):
+def create_planet_image(screen, planet):
     """Создаёт отображаемый объект планеты.
 
     Параметры:
@@ -82,11 +83,11 @@ def create_planet_image(space, planet):
     """
     x = scale_x(planet.x)
     y = scale_y(planet.y)
-    r = planet.R
-    planet.image = space.create_oval([x - r, y - r], [x + r, y + r], fill=planet.color)
+    r = round(planet.R)
+    planet.image = pygame.draw.circle(screen, planet.color, ([x, y]), r)
 
 
-def update_system_name(space, system_name):
+def update_system_name(screen, system_name):
     """Создаёт на холсте текст с названием системы небесных тел.
     Если текст уже был, обновляет его содержание.
 
@@ -95,10 +96,10 @@ def update_system_name(space, system_name):
     **space** — холст для рисования.
     **system_name** — название системы тел.
     """
-    space.create_text(30, 80, tag="header", text=system_name, font=header_font)
+    screen.create_text(30, 80, tag="header", text=system_name, font=header_font)
 
 
-def update_object_position(space, body):
+def update_object_position(screen, body):
     """Перемещает отображаемый объект на холсте.
 
     Параметры:
@@ -108,11 +109,11 @@ def update_object_position(space, body):
     """
     x = scale_x(body.x)
     y = scale_y(body.y)
-    r = body.R
+    r = round(body.R)
     if x + r < 0 or x - r > window_width or y + r < 0 or y - r > window_height:
-        space.coords(body.image, window_width + r, window_height + r,
-                     window_width + 2 * r, window_height + 2 * r)  # положить за пределы окна
-    space.coords(body.image, x - r, y - r, x + r, y + r)
+        body.image = pygame.draw.circle(screen, body.color,
+                                        (window_width + 2 * r, window_height + 2 * r), r)  # положить за пределы окна
+    body.image = pygame.draw.circle(screen, body.color, ([x, y]), r)
 
 
 if __name__ == "__main__":
